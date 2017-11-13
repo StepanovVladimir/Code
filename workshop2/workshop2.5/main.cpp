@@ -3,13 +3,14 @@
 #include <cmath>
 #include <random>
 
+constexpr unsigned WINDOW_WIDTH = 800;
+constexpr unsigned WINDOW_HEIGHT = 600;
+constexpr unsigned BALL_RADIUS = 30;
+
 struct Ball
 {
     sf::CircleShape shape;
-    sf::Vector2f position;
-    float size;
     sf::Vector2f speed;
-    sf::Color color;
 };
 
 struct PRNG
@@ -19,8 +20,8 @@ struct PRNG
 
 void initGenerator(PRNG &generator)
 {
-    unsigned device = unsigned(std::time(nullptr));
-    generator.engine.seed(device);
+    unsigned seed = unsigned(std::time(nullptr));
+    generator.engine.seed(seed);
 }
 
 float randomSpeed(PRNG &generator, float minValue, float maxValue)
@@ -42,7 +43,7 @@ void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
     {
         sf::Vector2f deltaVector = balls[j].shape.getPosition() - mousePosition;
         float delta = std::sqrt(std::pow(deltaVector.x, 2) + std::pow(deltaVector.y, 2));
-        if (delta <= 60)
+        if (delta <= 2 * BALL_RADIUS)
         {
             flag = 1;
         }
@@ -73,16 +74,12 @@ void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
         color.r = (colors[j].r + colors[k].r) / 2;
         color.g = (colors[j].g + colors[k].g) / 2;
         color.b = (colors[j].b + colors[k].b) / 2;
-        balls[i].color = color;
-        balls[i].size = 30;
         balls[i].speed = {speedX, speedY};
-        balls[i].position = mousePosition;
-        balls[i].shape.setPosition(balls[i].position);
-        balls[i].shape.setOrigin(balls[i].size, balls[i].size);
-        balls[i].shape.setRadius(balls[i].size);
-        balls[i].shape.setFillColor(balls[i].color);
-    }
-    
+        balls[i].shape.setPosition(mousePosition);
+        balls[i].shape.setOrigin(BALL_RADIUS, BALL_RADIUS);
+        balls[i].shape.setRadius(BALL_RADIUS);
+        balls[i].shape.setFillColor(color);
+    }   
 }
 
 void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mousePosition)
@@ -118,13 +115,13 @@ void update(std::vector<Ball> &balls, float &deltaTime)
         {
             sf::Vector2f deltaVector = balls[i].shape.getPosition() - balls[j].shape.getPosition();
             float delta = std::sqrt(std::pow(deltaVector.x, 2) + std::pow(deltaVector.y, 2));
-            float distanse = balls[i].size + balls[j].size;
+            float distanse = 2 * BALL_RADIUS;
             if (delta <= distanse)
             {
                 sf::Vector2f deltaSpeed = balls[i].speed - balls[j].speed;
                 float scalarProduct = deltaSpeed.x * deltaVector.x + deltaSpeed.y * deltaVector.y;
-                balls[i].speed = balls[i].speed - scalarProduct / (delta * delta) * deltaVector;
-                balls[j].speed = balls[j].speed + scalarProduct / (delta * delta) * deltaVector;
+                balls[i].speed = balls[i].speed - scalarProduct / float(std::pow(delta, 2)) * deltaVector;
+                balls[j].speed = balls[j].speed + scalarProduct / float(std::pow(delta, 2)) * deltaVector;
             }
         }
     }
@@ -133,19 +130,19 @@ void update(std::vector<Ball> &balls, float &deltaTime)
         sf::Vector2f position = balls[i].shape.getPosition();
         position += balls[i].speed * deltaTime;
 
-        if ((position.x + balls[i].size >= 800) && (balls[i].speed.x > 0))
+        if ((position.x + BALL_RADIUS >= WINDOW_WIDTH) && (balls[i].speed.x > 0))
         {
             balls[i].speed.x = -balls[i].speed.x;
         }
-        if ((position.x - balls[i].size < 0) && (balls[i].speed.x < 0))
+        if ((position.x - BALL_RADIUS < 0) && (balls[i].speed.x < 0))
         {
             balls[i].speed.x = -balls[i].speed.x;
         }
-        if ((position.y + balls[i].size >= 600) && (balls[i].speed.y > 0))
+        if ((position.y + BALL_RADIUS >= WINDOW_HEIGHT) && (balls[i].speed.y > 0))
         {
             balls[i].speed.y = -balls[i].speed.y;
         }
-        if ((position.y - balls[i].size < 0) && (balls[i].speed.y < 0))
+        if ((position.y - BALL_RADIUS < 0) && (balls[i].speed.y < 0))
         {
             balls[i].speed.y = -balls[i].speed.y;
         }
@@ -168,7 +165,7 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(
-        sf::VideoMode({800, 600}),
+        sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}),
         "Balls", sf::Style::Default, settings);
     sf::Clock clock;
     std::vector<Ball> balls;
