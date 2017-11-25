@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-project(workshop-lab-6)
+project(workshop-lab-2)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 
