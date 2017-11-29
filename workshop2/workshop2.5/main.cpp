@@ -36,6 +36,44 @@ size_t randomColor(PRNG &generator, size_t minValue, size_t maxValue)
     return distribution(generator.engine);
 }
 
+void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
+{
+    Ball ball;
+    balls.push_back(ball);
+    PRNG generator;
+    initGenerator(generator);
+    const float minSpeed = -400;
+    const float maxSpeed = 400;
+    sf::Color color;
+    std::vector<sf::Color> colors = {
+        sf::Color(255, 255, 255),
+        sf::Color(255, 0, 0),
+        sf::Color(0, 255, 0),
+        sf::Color(0, 0, 255),
+        sf::Color(255, 255, 0),
+        sf::Color(0, 255, 255),
+        sf::Color(190, 64, 255),
+        sf::Color(127, 127, 0)};
+    size_t i = balls.size() - 1;
+    float speedX = randomSpeed(generator, minSpeed, maxSpeed);
+    float speedY = randomSpeed(generator, minSpeed, maxSpeed);
+    size_t j = randomColor(generator, 0, 7);
+    size_t k = randomColor(generator, 0, 7);
+    color.r = (colors[j].r + colors[k].r) / 2;
+    color.g = (colors[j].g + colors[k].g) / 2;
+    color.b = (colors[j].b + colors[k].b) / 2;
+    balls[i].speed = {speedX, speedY};
+    balls[i].shape.setPosition(mousePosition);
+    balls[i].shape.setOrigin(BALL_RADIUS, BALL_RADIUS);
+    balls[i].shape.setRadius(BALL_RADIUS);
+    balls[i].shape.setFillColor(color); 
+}
+
+void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mousePosition)
+{
+    mousePosition = {float(event.x), float(event.y)};
+}
+
 unsigned checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
 {
     unsigned flag = 0;
@@ -51,47 +89,6 @@ unsigned checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
     return flag;
 }
 
-void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
-{
-    if ((checkOverlap(balls, mousePosition) == 0) || (balls.size() == 0))
-    {
-        Ball ball;
-        balls.push_back(ball);
-        PRNG generator;
-        initGenerator(generator);
-        const float minSpeed = -400;
-        const float maxSpeed = 400;
-        sf::Color color;
-        std::vector<sf::Color> colors = {
-            sf::Color(255, 255, 255),
-            sf::Color(255, 0, 0),
-            sf::Color(0, 255, 0),
-            sf::Color(0, 0, 255),
-            sf::Color(255, 255, 0),
-            sf::Color(0, 255, 255),
-            sf::Color(190, 64, 255),
-            sf::Color(127, 127, 0)};
-        size_t i = balls.size() - 1;
-        float speedX = randomSpeed(generator, minSpeed, maxSpeed);
-        float speedY = randomSpeed(generator, minSpeed, maxSpeed);
-        size_t j = randomColor(generator, 0, 7);
-        size_t k = randomColor(generator, 0, 7);
-        color.r = (colors[j].r + colors[k].r) / 2;
-        color.g = (colors[j].g + colors[k].g) / 2;
-        color.b = (colors[j].b + colors[k].b) / 2;
-        balls[i].speed = {speedX, speedY};
-        balls[i].shape.setPosition(mousePosition);
-        balls[i].shape.setOrigin(BALL_RADIUS, BALL_RADIUS);
-        balls[i].shape.setRadius(BALL_RADIUS);
-        balls[i].shape.setFillColor(color);
-    }   
-}
-
-void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mousePosition)
-{
-    mousePosition = {float(event.x), float(event.y)};
-}
-
 void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vector<Ball> &balls)
 {
     sf::Event event{};
@@ -104,7 +101,10 @@ void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vect
             break;
         case sf::Event::MouseButtonPressed:
             onMouseClick(event.mouseButton, mousePosition);
-            init(balls, mousePosition);
+            if ((checkOverlap(balls, mousePosition) == 0) || (balls.size() == 0))
+            {
+                init(balls, mousePosition);
+            }
         default:
             break;
         }
