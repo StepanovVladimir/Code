@@ -38,9 +38,8 @@ size_t randomColor(PRNG &generator, size_t minValue, size_t maxValue)
     return distribution(generator.engine);
 }
 
-void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
+void checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition, unsigned &flag)
 {
-    unsigned flag = 0;
     for (size_t j = 0; j < balls.size(); ++j)
     {
         sf::Vector2f deltaVector = balls[j].shape.getPosition() - mousePosition;
@@ -50,6 +49,12 @@ void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
             flag = 1;
         }
     }
+}
+
+void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
+{
+    unsigned flag = 0;
+    checkOverlap(balls, mousePosition, flag);
     if ((flag == 0) || (balls.size() == 0))
     {
         Ball ball;
@@ -124,9 +129,8 @@ void updateBallLifetimes(std::vector<Ball> &balls, size_t &i)
     balls[i].time = balls[i].clock.getElapsedTime().asSeconds();
 }
 
-void update(std::vector<Ball> &balls, float &deltaTime)
+void checkBallsClash(std::vector<Ball> &balls)
 {
-    removeDeathBalls(balls);
     for (size_t i = 0; i < balls.size(); ++i)
     {
         for (size_t j = i + 1; j < balls.size(); ++j)
@@ -143,6 +147,12 @@ void update(std::vector<Ball> &balls, float &deltaTime)
             }
         }
     }
+}
+
+void update(std::vector<Ball> &balls, float &deltaTime)
+{
+    removeDeathBalls(balls);
+    checkBallsClash(balls);
     for (size_t i = 0; i < balls.size(); ++i)
     {
         sf::Vector2f position = balls[i].shape.getPosition();

@@ -64,9 +64,8 @@ void pollEvents(sf::RenderWindow &window)
     }
 }
 
-void update(std::vector<Ball> &balls, float &deltaTime)
+void checkBallsClash(std::vector<Ball> &balls)
 {
-
     for (size_t i = 0; i < 7; ++i)
     {
         for (size_t j = i + 1; j < 7; ++j)
@@ -83,6 +82,11 @@ void update(std::vector<Ball> &balls, float &deltaTime)
             }
         }
     }
+}
+
+void update(std::vector<Ball> &balls, float &deltaTime)
+{
+    checkBallsClash(balls);
     for (size_t i = 0; i < 7; ++i)
     {
         sf::Vector2f position = balls[i].shape.getPosition();
