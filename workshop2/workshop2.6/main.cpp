@@ -38,8 +38,9 @@ size_t randomColor(PRNG &generator, size_t minValue, size_t maxValue)
     return distribution(generator.engine);
 }
 
-void checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition, unsigned &flag)
+unsigned checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
 {
+    unsigned flag = 0;
     for (size_t j = 0; j < balls.size(); ++j)
     {
         sf::Vector2f deltaVector = balls[j].shape.getPosition() - mousePosition;
@@ -49,13 +50,12 @@ void checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition, unsigne
             flag = 1;
         }
     }
+    return flag;
 }
 
 void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
 {
-    unsigned flag = 0;
-    checkOverlap(balls, mousePosition, flag);
-    if ((flag == 0) || (balls.size() == 0))
+    if ((checkOverlap(balls, mousePosition) == 0) || (balls.size() == 0))
     {
         Ball ball;
         balls.push_back(ball);
