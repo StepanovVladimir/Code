@@ -74,16 +74,16 @@ void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mouseP
     mousePosition = {float(event.x), float(event.y)};
 }
 
-unsigned checkOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
+bool checkNotOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
 {
-    unsigned flag = 0;
+    bool flag = true;
     for (size_t j = 0; j < balls.size(); ++j)
     {
         sf::Vector2f deltaVector = balls[j].shape.getPosition() - mousePosition;
         float delta = std::sqrt(std::pow(deltaVector.x, 2) + std::pow(deltaVector.y, 2));
         if (delta <= 2 * BALL_RADIUS)
         {
-            flag = 1;
+            flag = false;
         }
     }
     return flag;
@@ -101,7 +101,7 @@ void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vect
             break;
         case sf::Event::MouseButtonPressed:
             onMouseClick(event.mouseButton, mousePosition);
-            if ((checkOverlap(balls, mousePosition) == 0) || (balls.size() == 0))
+            if (checkNotOverlap(balls, mousePosition) || (balls.size() == 0))
             {
                 init(balls, mousePosition);
             }
