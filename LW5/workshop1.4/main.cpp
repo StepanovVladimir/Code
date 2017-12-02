@@ -4,12 +4,12 @@
 void init(sf::Texture &textureCat, sf::Sprite &cat,
           sf::Texture &textureLaser, sf::Sprite &laser)
 {
-    textureCat.loadFromFile("workshop1.4/cat.png");
+    textureCat.loadFromFile("./cat.png");
     cat.setTexture(textureCat);
     cat.setOrigin(textureCat.getSize().x / 2, textureCat.getSize().y / 2);
     cat.setPosition(400, 300);
 
-    textureLaser.loadFromFile("workshop1.4/red_pointer.png");
+    textureLaser.loadFromFile("./red_pointer.png");
     laser.setTexture(textureLaser);
     laser.setOrigin(textureLaser.getSize().x / 2, textureLaser.getSize().y / 2);
 }

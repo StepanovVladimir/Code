@@ -2,7 +2,7 @@
 
 void init(sf::Texture &textureCat, sf::Sprite &cat)
 {
-    textureCat.loadFromFile("workshop1.3/cat.png");
+    textureCat.loadFromFile("./cat.png");
     cat.setTexture(textureCat);
     cat.setPosition(400, 300);
 }
