@@ -19,7 +19,7 @@ void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mouseP
     mousePosition = {float(event.x), float(event.y)};
 }
 
-void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition)
+void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, bool &laserDraw)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -31,6 +31,7 @@ void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition)
             break;
         case sf::Event::MouseButtonPressed:
             onMouseClick(event.mouseButton, mousePosition);
+            laserDraw = true;
         default:
             break;
         }
@@ -62,11 +63,14 @@ void update(const sf::Vector2f &mousePosition, sf::Sprite &cat, sf::Sprite &lase
     laser.setPosition(mousePosition);
 }
 
-void redrawFrame(sf::RenderWindow &window, sf::Sprite &cat, sf::Sprite &laser)
+void redrawFrame(sf::RenderWindow &window, sf::Sprite &cat, sf::Sprite &laser, bool &laserDraw)
 {
     window.clear(sf::Color(0xFF, 0xFF, 0xFF));
     window.draw(cat);
-    window.draw(laser);
+    if (laserDraw)
+    {
+        window.draw(laser);
+    }
     window.display();
 }
 
@@ -82,15 +86,16 @@ int main()
     sf::Sprite cat;
     sf::Texture textureLaser;
     sf::Sprite laser;
+    bool laserDraw = false;
 
     sf::Vector2f mousePosition = {400, 300};
 
     init(textureCat, cat, textureLaser, laser);
     while (window.isOpen())
     {
-        pollEvents(window, mousePosition);
+        pollEvents(window, mousePosition, laserDraw);
         float dt = clock.restart().asSeconds();
         update(mousePosition, cat, laser, dt);
-        redrawFrame(window, cat, laser);
+        redrawFrame(window, cat, laser, laserDraw);
     }
 }
