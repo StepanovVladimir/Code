@@ -1,5 +1,4 @@
 #include "ball.h"
-#include "text.h"
 
 void handleEvents(sf::RenderWindow& window)
 {
@@ -13,11 +12,11 @@ void handleEvents(sf::RenderWindow& window)
     }
 }
 
-void render(sf::RenderWindow& window, sf::CircleShape& shape, sf::Text& text)
+void render(sf::RenderWindow& window, Ball& ball)
 {
     window.clear(sf::Color(0xFF, 0xFF, 0xFF));
-    window.draw(shape);
-    window.draw(text);
+    window.draw(ball.shape);
+    window.draw(ball.text);
     window.display();
 }
 
@@ -29,15 +28,15 @@ int main()
     window.create(
         sf::VideoMode(800, 600),
         "Name ball", sf::Style::Default, settings);
-    sf::CircleShape shape;
-    sf::Font font;
-    sf::Text text;
-    initializeBall(shape);
-    initializeText(font, text);
+    sf::Clock clock;
+    Ball ball;
+    initializeBall(ball);
     while (window.isOpen())
     {
         handleEvents(window);
-        render(window, shape, text);
+        float deltaTime = clock.restart().asSeconds();
+        updateBall(ball, deltaTime);
+        render(window, ball);
     }
     return 0;
 }
