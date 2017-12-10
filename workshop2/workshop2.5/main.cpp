@@ -36,12 +36,10 @@ size_t randomColor(PRNG &generator, size_t minValue, size_t maxValue)
     return distribution(generator.engine);
 }
 
-void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
+void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition, PRNG &generator)
 {
     Ball ball;
     balls.push_back(ball);
-    PRNG generator;
-    initGenerator(generator);
     const float minSpeed = -400;
     const float maxSpeed = 400;
     sf::Color color;
@@ -89,7 +87,8 @@ bool checkNotOverlap(std::vector<Ball> &balls, sf::Vector2f &mousePosition)
     return flag;
 }
 
-void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vector<Ball> &balls)
+void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vector<Ball> &balls,
+    PRNG &generator)
 {
     sf::Event event{};
     while (window.pollEvent(event))
@@ -103,7 +102,7 @@ void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition, std::vect
             onMouseClick(event.mouseButton, mousePosition);
             if (checkNotOverlap(balls, mousePosition) || (balls.size() == 0))
             {
-                init(balls, mousePosition);
+                init(balls, mousePosition, generator);
             }
         default:
             break;
@@ -179,9 +178,11 @@ int main()
     sf::Clock clock;
     std::vector<Ball> balls;
     sf::Vector2f mousePosition;
+    PRNG generator;
+    initGenerator(generator);
     while (window.isOpen())
     {
-        pollEvents(window, mousePosition, balls);
+        pollEvents(window, mousePosition, balls, generator);
         float deltaTime = clock.restart().asSeconds();
         update(balls, deltaTime);
         redrawFrame(window, balls);
