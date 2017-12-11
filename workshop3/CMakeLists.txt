@@ -10,3 +10,4 @@ find_package(SFML 2 COMPONENTS window graphics system REQUIRED)
 
 add_subdirectory(workshop3.1)
 add_subdirectory(workshop3.3)
+add_subdirectory(workshop3.6)
