@@ -6,6 +6,7 @@
 constexpr unsigned WINDOW_WIDTH = 800;
 constexpr unsigned WINDOW_HEIGHT = 600;
 constexpr unsigned BALL_RADIUS = 30;
+constexpr float MAX_SPEED = 500;
 
 struct Ball
 {
@@ -32,7 +33,7 @@ float randomSpeed(PRNG &generator, float minValue, float maxValue)
     return distribution(generator.engine);
 }
 
-size_t randomColor(PRNG &generator, size_t minValue, size_t maxValue)
+size_t randomIndex(PRNG &generator, size_t minValue, size_t maxValue)
 {
     std::uniform_int_distribution<size_t> distribution(minValue, maxValue);
     return distribution(generator.engine);
@@ -42,9 +43,8 @@ void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition, PRNG &generator
 {
     Ball ball;
     balls.push_back(ball);
-    const float minSpeed = -400;
-    const float maxSpeed = 400;
-    sf::Color color;
+    float speedX = randomSpeed(generator, -MAX_SPEED, MAX_SPEED);
+    float speedY = randomSpeed(generator, -MAX_SPEED, MAX_SPEED);
     std::vector<sf::Color> colors = {
         sf::Color(255, 255, 255),
         sf::Color(255, 0, 0),
@@ -54,19 +54,16 @@ void init(std::vector<Ball> &balls, sf::Vector2f &mousePosition, PRNG &generator
         sf::Color(0, 255, 255),
         sf::Color(190, 64, 255),
         sf::Color(127, 127, 0)};
+    sf::Color color;
+    color.r = (colors[randomIndex(generator, 0, 7)].r + colors[randomIndex(generator, 0, 7)].r) / 2;
+    color.g = (colors[randomIndex(generator, 0, 7)].g + colors[randomIndex(generator, 0, 7)].g) / 2;
+    color.b = (colors[randomIndex(generator, 0, 7)].b + colors[randomIndex(generator, 0, 7)].b) / 2;
     size_t i = balls.size() - 1;
-    float speedX = randomSpeed(generator, minSpeed, maxSpeed);
-    float speedY = randomSpeed(generator, minSpeed, maxSpeed);
-    size_t j = randomColor(generator, 0, 7);
-    size_t k = randomColor(generator, 0, 7);
-    color.r = (colors[j].r + colors[k].r) / 2;
-    color.g = (colors[j].g + colors[k].g) / 2;
-    color.b = (colors[j].b + colors[k].b) / 2;
     balls[i].speed = {speedX, speedY};
     balls[i].shape.setPosition(mousePosition);
     balls[i].shape.setOrigin(BALL_RADIUS, BALL_RADIUS);
     balls[i].shape.setRadius(BALL_RADIUS);
-    balls[i].shape.setFillColor(color); 
+    balls[i].shape.setFillColor(color);
 }
 
 void onMouseClick(const sf::Event::MouseButtonEvent &event, sf::Vector2f &mousePosition)

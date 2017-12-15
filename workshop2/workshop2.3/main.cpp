@@ -7,6 +7,7 @@
 constexpr unsigned WINDOW_WIDTH = 800;
 constexpr unsigned WINDOW_HEIGHT = 600;
 constexpr unsigned BALL_RADIUS = 30;
+constexpr float MAX_SPEED = 500;
 
 struct Ball
 {
@@ -35,8 +36,6 @@ void init(std::vector<Ball> &balls)
 {
     PRNG generator;
     initGenerator(generator);
-    const float minSpeed = -400;
-    const float maxSpeed = 400;
     const std::vector<sf::Color> colors = {
         sf::Color(255, 255, 255),
         sf::Color(255, 0, 0),
@@ -45,7 +44,6 @@ void init(std::vector<Ball> &balls)
         sf::Color(255, 255, 0),
         sf::Color(255, 0, 255),
         sf::Color(0, 255, 255)};
-    std::vector<sf::Vector2f> speeds{{0, 0}};
     const std::vector<sf::Vector2f> positions = {
         {80, 250},
         {720, 80},
@@ -56,10 +54,9 @@ void init(std::vector<Ball> &balls)
         {80, 520}};
     for (size_t i = 0; i < 7; ++i)
     {
-        float speedX = randomSpeed(generator, minSpeed, maxSpeed);
-        float speedY = randomSpeed(generator, minSpeed, maxSpeed);
-        speeds[i] = {speedX, speedY};
-        balls[i].speed = speeds[i];
+        float speedX = randomSpeed(generator, -MAX_SPEED, MAX_SPEED);
+        float speedY = randomSpeed(generator, -MAX_SPEED, MAX_SPEED);
+        balls[i].speed = {speedX, speedY};
         balls[i].shape.setPosition(positions[i]);
         balls[i].shape.setOrigin(BALL_RADIUS, BALL_RADIUS);
         balls[i].shape.setRadius(BALL_RADIUS);
