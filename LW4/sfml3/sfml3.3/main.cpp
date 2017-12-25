@@ -25,9 +25,9 @@ sf::Vector2f toEuclidean(float radiusX, float radiusY, float angle)
         radiusY * std::sin(angle)};
 }
 
-float inside(const sf::Vector2f &mousePosition, const sf::Vector2f &center, float X, float Y)
+float inside(const sf::Vector2f &mousePosition, const sf::Vector2f &eyePosition, float rotationRadiusX, float rotationRadiusY)
 {
-    return (std::pow((mousePosition.x - center.x), 2) + std::pow((mousePosition.y - center.y), 2));
+    return (std::pow((mousePosition.x - eyePosition.x) / rotationRadiusX, 2) + std::pow((mousePosition.y - eyePosition.y) / rotationRadiusY, 2));
 }
 
 void updateEyeRElements(EyeR &eyeR)
@@ -138,24 +138,13 @@ void pollEvents(sf::RenderWindow &window, sf::Vector2f &mousePosition)
 void update(const sf::Vector2f &mousePosition, EyeR &eyeR, EyeL &eyeL)
 {
     const sf::Vector2f rotationRadius = {20.f, 40.f};
-    const sf::Vector2f deltaR = mousePosition - eyeR.ellipseR.getPosition();
-    const sf::Vector2f deltaL = mousePosition - eyeL.ellipseL.getPosition();
-    float angleR = atan2(deltaR.y, deltaR.x);
-    float angleL = atan2(deltaL.y, deltaL.x);
 
-    const float insideEyeR = inside(mousePosition,
-                                    eyeR.ellipseR.getPosition(),
-                                    rotationRadius.x,
-                                    rotationRadius.y);
+    const float insideEyeR = inside(mousePosition, eyeR.ellipseR.getPosition(),
+        rotationRadius.x, rotationRadius.y);
+    const float insideEyeL = inside(mousePosition, eyeL.ellipseL.getPosition(),
+        rotationRadius.x, rotationRadius.y);
 
-    const float insideEyeL = inside(mousePosition,
-                                    eyeL.ellipseL.getPosition(),
-                                    rotationRadius.x,
-                                    rotationRadius.y);
-
-    float R = std::pow(rotationRadius.x * std::cos(angleR), 2) + std::pow(rotationRadius.y * std::sin(angleR), 2);
-    float L = std::pow(rotationRadius.x * std::cos(angleL), 2) + std::pow(rotationRadius.y * std::sin(angleL), 2);
-    if (insideEyeR > R)
+    if (insideEyeR > 1.f)
     {
         const sf::Vector2f deltaR = mousePosition - eyeR.position;
         eyeR.rotation = atan2(deltaR.y, deltaR.x);
@@ -166,7 +155,7 @@ void update(const sf::Vector2f &mousePosition, EyeR &eyeR, EyeL &eyeL)
         eyeR.eyeBallR.setPosition(mousePosition);
     }
 
-    if (insideEyeL > L)
+    if (insideEyeL > 1.f)
     {
         const sf::Vector2f deltaL = mousePosition - eyeL.position;
         eyeL.rotation = atan2(deltaL.y, deltaL.x);
@@ -211,4 +200,4 @@ int main()
         update(mousePosition, eyeR, eyeL);
         redrawFrame(window, eyeR, eyeL);
     }
-}
+} 
